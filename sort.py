@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+from pathlib import Path
 
 global dir_im
 global dir_aud
@@ -100,8 +101,6 @@ def sort_file(path_for_sort):
             else:
                 new_file_path = os.path.join(dir_other, file_n)
                 os.replace(file_path, new_file_path)
-        else:
-            continue
 
 
 def archivunpack():
@@ -116,8 +115,6 @@ def archivunpack():
                 os.makedirs(folder_for_new_arch)
             shutil.unpack_archive(file_path, folder_for_new_arch)
             os.remove(file_path)
-        else:
-            continue
 
 
 def otherfiles(path):
@@ -131,12 +128,6 @@ def otherfiles(path):
 
 
 def sort_dir(path_for_sort):
-    global dir_im
-    global dir_aud
-    global dir_vid
-    global dir_doc
-    global dir_arch
-    global dir_other
     global my_sort_dir
 
     all_files = os.listdir(path_for_sort)
@@ -149,10 +140,6 @@ def sort_dir(path_for_sort):
                 else:
                     sort_file(subfolder)
                     sort_dir(subfolder)
-            else:
-                continue
-        else:
-            continue
 
 
 def delit_old_dir(path):
@@ -166,20 +153,24 @@ def delit_old_dir(path):
                     os.rmdir(subfolder)
                 else:
                     delit_old_dir(subfolder)
-    all_files = os.listdir(path)
-    for file in all_files:
-        if file not in my_sort_dir:
-            subfolder = os.path.join(path, file)
-            if os.path.isdir(subfolder):
-                if not os.listdir(subfolder):
                     os.rmdir(subfolder)
 
 
-if __name__ == "__main__":
+def main():
+    if len(sys.argv) < 2:
+        print('Enter path to folder which should be cleaned')
+        exit()
     folder = sys.argv[1]
+    if not (os.path.exists(folder) and Path(folder).is_dir()):
+        print('Path incorrect')
+        exit()
     newdir(folder)
     sort_file(folder)
     sort_dir(folder)
     archivunpack()
     otherfiles(folder)
     delit_old_dir(folder)
+
+
+if __name__ == "__main__":
+    exit(main())
